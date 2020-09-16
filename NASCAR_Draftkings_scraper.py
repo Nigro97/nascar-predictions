@@ -27,9 +27,10 @@ def get_headers(soup):
     df_header = []
     for header in headers:
         df_header.append(header.get_text())
+    df_header.append("Race Name")
     return df_header
 
-def get_stats(soup, header):
+def get_stats(soup, header, url):
     """Input html soup, get text from all tbody tags, return data separated by new lines in list of lists by line"""
     tbody = soup.find("tbody")
     #tbody tags contain the tabular data that can be split into lines
@@ -41,8 +42,9 @@ def get_stats(soup, header):
         if line != "":
             #lots of empty text that needs to be removed
             row.append(line.strip())
-            if len(row) == len(header):
+            if len(row) == len(header)-1:
                 #create next list when reaching the end of one line
+                row.append(url)
                 data.append(row)
                 row = []
     return data
@@ -72,14 +74,14 @@ race_names = get_race_list(lineup_soup)
 stats_url = "https://frcs.pro/dfs/draftkings/race-fantasy-points/2020/daytona-international-speedway/daytona-500/"
 stats_soup = get_soup(stats_url)
 df_header = get_headers(stats_soup)
-stats_data = get_stats(stats_soup, df_header)
+stats_data = get_stats(stats_soup, df_header, stats_url)
 df = create_df(stats_data, df_header)
 
 #obtain urls for individual race statistics
 race_urls = stats_urls(stats_soup)
-for url in race_urls[5:]:
+for url in race_urls[5:7]:
     race_soup = get_soup(url)
-    race_data = get_stats(race_soup, df_header)
+    race_data = get_stats(race_soup, df_header, url)
     race_df = create_df(race_data, df_header)
     df = df.append(race_df)
     time.sleep(random.randint(2,6))
