@@ -56,10 +56,10 @@ def create_df(data, header):
     df["Year"] = df["Race_URL"].str.replace("https://frcs.pro/dfs/draftkings/race-fantasy-points/", "").str.split("/").str[0].str
     df["Track"] = df["Race_URL"].str.replace("https://frcs.pro/dfs/draftkings/race-fantasy-points/", "").str.split("/").str[1].str.replace("-", " ")
     df["Race_Name"] = df["Race_URL"].str.replace("https://frcs.pro/dfs/draftkings/race-fantasy-points/", "").str.split("/").str[2].str.replace("-", " ")
-    #df["Race_Name"] = df["Race_Name"].str[(df["Race_Name"].str.find("2020")+5):67]
     return df
 
 def stats_urls(soup):
+    """input HTML soup, find all ul tags that contain links, and return a list of urls to race stats pages"""
     ul_tag = soup.find("ul", class_ = "list-unstyled sibling-links")
     a_tags = ul_tag.find_all("a")
     urls = []
@@ -68,6 +68,10 @@ def stats_urls(soup):
         if href.startswith("http"):
             urls.append(href)
     return urls
+
+def export_excel(df):
+    """Export dataframe to an Excel workbook"""
+    df.to_excel("nascar_draftkings_stats.xlsx", sheet_name = "Stats")
 
 #obtaining perfect lineup data for race from linestarapp website
 lineup_url = "https://www.linestarapp.com/Perfect/Sport/NAS/Site/DraftKings/PID/307"
@@ -89,4 +93,5 @@ for url in race_urls[5:6]:
     race_df = create_df(race_data, df_header)
     df = df.append(race_df)
     time.sleep(random.randint(2,6))
-print(df)
+
+export_excel(df)
