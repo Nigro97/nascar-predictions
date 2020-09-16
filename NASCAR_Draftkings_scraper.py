@@ -27,7 +27,7 @@ def get_headers(soup):
     df_header = []
     for header in headers:
         df_header.append(header.get_text())
-    df_header.append("Race Name")
+    df_header.append("Race_URL")
     return df_header
 
 def get_stats(soup, header, url):
@@ -53,6 +53,9 @@ def create_df(data, header):
     """Input list of lists and header list to create a dataframe which is returned"""
     df = pd.DataFrame(data, columns = header)
     df.set_index("Driver")
+    df["Track"] = df["Race_URL"].str.replace("https://frcs.pro/dfs/draftkings/race-fantasy-points/2020/", "").str.split("/").str[0].str.replace("-", " ")
+    df["Race_Name"] = df["Race_URL"].str.replace("https://frcs.pro/dfs/draftkings/race-fantasy-points/2020/", "").str.split("/").str[1].str.replace("-", " ")
+    #df["Race_Name"] = df["Race_Name"].str[(df["Race_Name"].str.find("2020")+5):67]
     return df
 
 def stats_urls(soup):
@@ -79,7 +82,7 @@ df = create_df(stats_data, df_header)
 
 #obtain urls for individual race statistics
 race_urls = stats_urls(stats_soup)
-for url in race_urls[5:7]:
+for url in race_urls[5:6]:
     race_soup = get_soup(url)
     race_data = get_stats(race_soup, df_header, url)
     race_df = create_df(race_data, df_header)
