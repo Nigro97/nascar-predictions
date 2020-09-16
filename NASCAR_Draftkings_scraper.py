@@ -53,7 +53,7 @@ def create_df(data, header):
     """Input list of lists and header list to create a dataframe which is returned"""
     df = pd.DataFrame(data, columns = header)
     df.set_index("Driver")
-    df["Year"] = df["Race_URL"].str.replace("https://frcs.pro/dfs/draftkings/race-fantasy-points/", "").str.split("/").str[0].str
+    df["Year"] = df["Race_URL"].str.replace("https://frcs.pro/dfs/draftkings/race-fantasy-points/", "").str.split("/").str[0]
     df["Track"] = df["Race_URL"].str.replace("https://frcs.pro/dfs/draftkings/race-fantasy-points/", "").str.split("/").str[1].str.replace("-", " ")
     df["Race_Name"] = df["Race_URL"].str.replace("https://frcs.pro/dfs/draftkings/race-fantasy-points/", "").str.split("/").str[2].str.replace("-", " ")
     return df
