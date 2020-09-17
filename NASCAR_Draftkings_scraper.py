@@ -56,6 +56,16 @@ def create_df(data, header):
     df["Year"] = df["Race_URL"].str.replace("https://frcs.pro/dfs/draftkings/race-fantasy-points/", "").str.split("/").str[0]
     df["Track"] = df["Race_URL"].str.replace("https://frcs.pro/dfs/draftkings/race-fantasy-points/", "").str.split("/").str[1].str.replace("-", " ")
     df["Race_Name"] = df["Race_URL"].str.replace("https://frcs.pro/dfs/draftkings/race-fantasy-points/", "").str.split("/").str[2].str.replace("-", " ")
+    df = df_cleaning(df)
+    return df
+
+def df_cleaning(df):
+    """Inputs a DF, changes columns to correct datatype and removes extra characters, returns cleaned dataset"""
+    df["SLRY"] = df["SLRY"].str[1:].str.replace(",", "")
+    df["PP$"] = df["PP$"].str[1:].str.replace(",", "")
+    df[["SLRY", "PP$", "ST", "FIN", "Fast", "Led", "PC D PTS", "FL PTS", "LL PTS", "F PTS", "TOT PTS", "Year"]] = df[["SLRY", "PP$", "ST", "FIN", "Fast", "Led", "PC D PTS", "FL PTS", "LL PTS", "F PTS", "TOT PTS", "Year"]].apply(pd.to_numeric, errors="coerce")
+    #if PP$ is zero, that means fantasy points were negative, so a point per dollar couldn't be calculated and was set to zero. We want this set to being abnormally large instead
+    df["PP$"].loc[df["PP$"] == 0] = 100000
     return df
 
 def stats_urls(soup):
